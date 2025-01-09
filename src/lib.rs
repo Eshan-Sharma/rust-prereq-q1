@@ -3,11 +3,12 @@ mod tests {
     use std::io::{self, BufRead};
 
     use solana_client::rpc_client::RpcClient;
+    use solana_program::{pubkey::Pubkey, system_instruction::transfer};
     use solana_sdk::signature::read_keypair_file;
     use solana_sdk::{self, bs58};
     use solana_sdk::{
-        pubkey::Pubkey,
         signature::{Keypair, Signer},
+        transaction::Transaction,
     };
 
     #[test]
@@ -42,7 +43,35 @@ mod tests {
     //https://explorer.solana.com/tx/5zQUegCVYWRm99Y8yvoKECi2ZerH1KHEYRVSmsPgXSfG8r38Gb1nd7qPFX6iaoAJeJwuf1DQLHMjpyQzqQSBRpaj?cluster=devnet
 
     #[test]
-    fn transfer_sol() {}
+    fn transfer_sol() {
+        let from_wallet =
+            read_keypair_file("src/dev-wallet.json").expect("Couldn't find wallet file");
+        let to_wallet =
+            read_keypair_file("src/turbine-wallet.json").expect("Couldn't find wallet file");
+        const RPC_URL: &str = "https://api.devnet.solana.com";
+        let rpc_client = RpcClient::new(RPC_URL);
+        let recent_blockhash = rpc_client
+            .get_latest_blockhash()
+            .expect("Failed to get recent blockhash");
+        let transaction = Transaction::new_signed_with_payer(
+            &[transfer(
+                &from_wallet.pubkey(),
+                &to_wallet.pubkey(),
+                1_000_000,
+            )],
+            Some(&from_wallet.pubkey()),
+            &vec![&from_wallet],
+            recent_blockhash,
+        );
+        let signature = rpc_client
+            .send_and_confirm_transaction(&transaction)
+            .expect("Failed to send transaction");
+        print!(
+            "Success! Checkout txhash: https://explorer.solana.com/tx/{}?cluster=devnet",
+            signature
+        );
+    }
+    //https://explorer.solana.com/tx/26bpPByCgZy3esgJjZig1AJr17KwUT69gf7ah4WUuUjsJiMaqzptTsw2JmCsMTuMyocqJuufZ58F45f3QrmLrU1X?cluster=devnet
 
     #[test]
     fn base58_to_wallet() {
