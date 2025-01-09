@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use solana_sdk;
+    use std::io::{self, BufRead};
+
+    use solana_sdk::{self, bs58};
     use solana_sdk::{
         pubkey::Pubkey,
         signature::{Keypair, Signer},
@@ -24,4 +26,14 @@ mod tests {
 
     #[test]
     fn transfer_sol() {}
+
+    #[test]
+    fn base58_to_wallet() {
+        println!("Input your private key as base58");
+        let stdin = io::stdin();
+        let base58 = stdin.lock().lines().next().unwrap().unwrap();
+        print!("Your wallet file is:");
+        let wallet = bs58::decode(base58).into_vec().unwrap();
+        println!("{:?}", wallet);
+    }
 }
