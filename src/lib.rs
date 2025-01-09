@@ -1,16 +1,52 @@
+mod programs;
 #[cfg(test)]
 mod tests {
+
+    use crate::programs::Turbine3_prereq::{CompleteArgs, Turbine3PrereqProgram, UpdateArgs};
     use std::io::{self, BufRead};
 
     use solana_client::rpc_client::RpcClient;
     use solana_program::{pubkey::Pubkey, system_instruction::transfer};
     use solana_sdk::signature::read_keypair_file;
+    use solana_sdk::system_program;
     use solana_sdk::{self, bs58};
     use solana_sdk::{
         message::Message,
         signature::{Keypair, Signer},
         transaction::Transaction,
     };
+    #[test]
+    fn enroll() {
+        const RPC_URL: &str = "https://api.devnet.solana.com";
+        let rpc_client = RpcClient::new(RPC_URL);
+        let signer = read_keypair_file("src/turbine-wallet.json").expect("Error reading wallet");
+
+        let prereq = Turbine3PrereqProgram::derive_program_address(&[
+            b"prereq",
+            signer.pubkey().to_bytes().as_ref(),
+        ]);
+        let args = CompleteArgs {
+            github: b"eshan-Sharma".to_vec(),
+        };
+        let blockhash = rpc_client
+            .get_latest_blockhash()
+            .expect("Failed to get recent blockhash");
+        let transaction = Turbine3PrereqProgram::complete(
+            &[&signer.pubkey(), &prereq, &system_program::id()],
+            &args,
+            Some(&signer.pubkey()),
+            &[&signer],
+            blockhash,
+        );
+        let signature = rpc_client
+            .send_and_confirm_transaction(&transaction)
+            .expect("Failed to send transaction");
+        println!(
+            "Success! Checkout the txhash: https://explorer.solana.com/tx/{}?cluster=devnet",
+            signature
+        );
+    }
+    //https://explorer.solana.com/tx/2vQRmm9WQ61Am63ULTNi6kPEho2uW1ifWkEjKwLKS2kG8FAVKmDwiNRmLsgZRQUHD4kH5AFyR3NqzEhViJQiv8zb?cluster=devnet
 
     #[test]
     fn keygen() {
