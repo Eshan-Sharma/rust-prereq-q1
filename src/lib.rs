@@ -2,6 +2,8 @@
 mod tests {
     use std::io::{self, BufRead};
 
+    use solana_client::rpc_client::RpcClient;
+    use solana_sdk::signature::read_keypair_file;
     use solana_sdk::{self, bs58};
     use solana_sdk::{
         pubkey::Pubkey,
@@ -22,7 +24,22 @@ mod tests {
     //FAuoWgF5aGC33CyWnM9XXF9rGognWYEBqLsd4ffa8eq3
 
     #[test]
-    fn airdrop() {}
+    fn airdrop() {
+        const RPC_URL: &str = "https://api.devnet.solana.com";
+        let keypair = read_keypair_file("src/dev-wallet.json").expect("Couldn't find wallet file");
+        let client = RpcClient::new(RPC_URL);
+        match client.request_airdrop(&keypair.pubkey(), 2_000_000_000u64) {
+            Ok(s) => {
+                println!("Success! Check out your txhash:");
+                println!(
+                    "https://explorer.solana.com/tx/{}?cluster=devnet",
+                    s.to_string()
+                )
+            }
+            Err(e) => println!("Oops, something went wrong: {}", e),
+        }
+    }
+    //https://explorer.solana.com/tx/5zQUegCVYWRm99Y8yvoKECi2ZerH1KHEYRVSmsPgXSfG8r38Gb1nd7qPFX6iaoAJeJwuf1DQLHMjpyQzqQSBRpaj?cluster=devnet
 
     #[test]
     fn transfer_sol() {}
