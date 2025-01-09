@@ -7,6 +7,7 @@ mod tests {
     use solana_sdk::signature::read_keypair_file;
     use solana_sdk::{self, bs58};
     use solana_sdk::{
+        message::Message,
         signature::{Keypair, Signer},
         transaction::Transaction,
     };
@@ -50,14 +51,29 @@ mod tests {
             read_keypair_file("src/turbine-wallet.json").expect("Couldn't find wallet file");
         const RPC_URL: &str = "https://api.devnet.solana.com";
         let rpc_client = RpcClient::new(RPC_URL);
+        let balance = rpc_client
+            .get_balance(&from_wallet.pubkey())
+            .expect("Failed to get balance");
         let recent_blockhash = rpc_client
             .get_latest_blockhash()
             .expect("Failed to get recent blockhash");
+        let message = Message::new_with_blockhash(
+            &[transfer(
+                &from_wallet.pubkey(),
+                &to_wallet.pubkey(),
+                balance,
+            )],
+            Some(&from_wallet.pubkey()),
+            &recent_blockhash,
+        );
+        let fee = rpc_client
+            .get_fee_for_message(&message)
+            .expect("Failed to get fee calculator");
         let transaction = Transaction::new_signed_with_payer(
             &[transfer(
                 &from_wallet.pubkey(),
                 &to_wallet.pubkey(),
-                1_000_000,
+                balance - fee,
             )],
             Some(&from_wallet.pubkey()),
             &vec![&from_wallet],
@@ -71,7 +87,8 @@ mod tests {
             signature
         );
     }
-    //https://explorer.solana.com/tx/26bpPByCgZy3esgJjZig1AJr17KwUT69gf7ah4WUuUjsJiMaqzptTsw2JmCsMTuMyocqJuufZ58F45f3QrmLrU1X?cluster=devnet
+    //First transfer - https://explorer.solana.com/tx/26bpPByCgZy3esgJjZig1AJr17KwUT69gf7ah4WUuUjsJiMaqzptTsw2JmCsMTuMyocqJuufZ58F45f3QrmLrU1X?cluster=devnet
+    //Full transfer - https://explorer.solana.com/tx/Vz6jxoZXYoVqd6t8DYhmPXEuskGCwSpCsb5by4rQEuYPo9g7CecoZ6nxTVuBmPYzAYkJ3BPmd15HyVRVpYSvPJe?cluster=devnet
 
     #[test]
     fn base58_to_wallet() {
