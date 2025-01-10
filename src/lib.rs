@@ -48,6 +48,8 @@ mod tests {
     }
     //https://explorer.solana.com/tx/2vQRmm9WQ61Am63ULTNi6kPEho2uW1ifWkEjKwLKS2kG8FAVKmDwiNRmLsgZRQUHD4kH5AFyR3NqzEhViJQiv8zb?cluster=devnet
 
+    //New address - https://explorer.solana.com/tx/3vf4e3QMk4Du5Gyw1SxbFUxcJEV2gko1cBDgFCYBN83fUX1uryEReWfckc8jmBhTxDNBc1g2xUgvpLhzWMupfrKi?cluster=devnet
+
     #[test]
     fn keygen() {
         let kp = Keypair::new();
@@ -78,6 +80,7 @@ mod tests {
         }
     }
     //https://explorer.solana.com/tx/5zQUegCVYWRm99Y8yvoKECi2ZerH1KHEYRVSmsPgXSfG8r38Gb1nd7qPFX6iaoAJeJwuf1DQLHMjpyQzqQSBRpaj?cluster=devnet
+    //Second - https://explorer.solana.com/tx/32cpc5ibHCcgCio9F3y43znatMmAXc94dSLet5GYiJ8Je7cXUCVwSzAinZx7qov1AH5dfd5WUUu98z7aL6GYCBg7?cluster=devnet
 
     #[test]
     fn transfer_sol() {
@@ -125,6 +128,9 @@ mod tests {
     }
     //First transfer - https://explorer.solana.com/tx/26bpPByCgZy3esgJjZig1AJr17KwUT69gf7ah4WUuUjsJiMaqzptTsw2JmCsMTuMyocqJuufZ58F45f3QrmLrU1X?cluster=devnet
     //Full transfer - https://explorer.solana.com/tx/Vz6jxoZXYoVqd6t8DYhmPXEuskGCwSpCsb5by4rQEuYPo9g7CecoZ6nxTVuBmPYzAYkJ3BPmd15HyVRVpYSvPJe?cluster=devnet
+
+    //After change - https://explorer.solana.com/tx/54Ka5NnY6oNLzffYekyCTRD5YxtWv3cU1TXetB5JrHBrYhJSS27mWHoazWhsN4PKn9wXPANi4T7E3BVkst4LR1Bt?cluster=devnet
+    // After change full transfer -https://explorer.solana.com/tx/5rh2JFypJWMCRhar33YCJLwkcqE7TovuzvB3D9cpAAyNAsvSaGJcxkDtfoo3WLAdcn73mWhuyojgdHhnjwuwfKd4?cluster=devnet
 
     #[test]
     fn base58_to_wallet() {
